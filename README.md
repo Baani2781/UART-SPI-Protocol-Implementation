@@ -12,5 +12,4 @@ Designed and implemented UART and SPI communication protocols using **Verilog HD
 - Xilinx Vivado
 - Vivado Simulator
 
-## Status
-🚧 Currently under development.
+
