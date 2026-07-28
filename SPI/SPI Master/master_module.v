@@ -21,19 +21,18 @@ parameter FINISH_STATE= 2'b10;
 reg [1:0]state;
 reg [7:0]tx_shift;
 reg [7:0]rx_shift;
-reg [2:0]bit_count;
+reg [3:0]bit_count;
 always @(posedge clk or posedge rst)
 begin
     if(rst)
     begin
         state<= IDLE_STATE;
-
         ss<=1'b1;
         sclk<=1'b0;
         mosi <= 1'b0;
         busy<=1'b0;
         done<=1'b0;
-        bit_count <= 3'd7;
+        bit_count <=4'd7;
         tx_shift<=8'd0;
         rx_shift<=8'd0;
         rx_data<=8'd0;
@@ -58,27 +57,28 @@ begin
                 state <= TRANSFER_STATE;
             end
         end
-          
+        
         TRANSFER_STATE:
         begin
             if(sclk_en)
-            begin
-                sclk<= ~sclk;
+            begin       
                 if(sclk == 1'b0)
                 begin
-                    rx_shift[bit_count]<=miso;
+                    sclk <= 1'b1;
+                    rx_shift[bit_count] <= miso;
                 end
                 else
                 begin
-                    if(bit_count==0)
+                    sclk <= 1'b0;
+                    if(bit_count == 0)
                     begin
-                        state<=FINISH_STATE;
+                        state <= FINISH_STATE;
                     end
                     else
                     begin
-                        bit_count<=bit_count - 1'b1;
-                        tx_shift<={tx_shift[6:0],1'b0};
-                        mosi<=tx_shift[6];
+                        bit_count <= bit_count - 1'b1;
+                        tx_shift <= {tx_shift[6:0],1'b0};
+                        mosi <= tx_shift[6];
                     end
                 end
             end
